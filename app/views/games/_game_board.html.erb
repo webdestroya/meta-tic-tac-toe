@@ -1,0 +1,40 @@
+<section id="gameboard">
+
+  <% 3.times do |board_row| %>
+  <div class="row">
+    <% 3.times do |board_col| %>
+    <% grid_pos = 0 %>
+    <div class="span2">
+      <table class="table table-bordered table-condensed" 
+        data-board-row="<%= board_row %>"
+        data-board-col="<%= board_col %>"
+        >
+        <tbody>
+        <% 3.times do |row| %>
+        <tr>
+          <% 3.times do |col| %>
+          <td 
+            width="33%"
+            data-board-row="<%= board_row %>"
+            data-board-col="<%= board_col %>"
+            data-row="<%= row %>"
+            data-col="<%= col %>"
+            data-grid-pos="<%= grid_pos %>"
+            data-coord="<%= row %>,<%= col %>"
+            data-board-coord="<%= board_row %>,<%= board_col %>"
+            >
+            <a href="#" class="place-marker">X</a>
+          </td>
+          <% grid_pos = grid_pos + 1 %>
+          <% end %>
+        </tr>
+        <% end %>
+        </tbody>
+      </table>
+    </div>
+    <% end %>
+  </div>
+  <% end %>
+
+
+</section>

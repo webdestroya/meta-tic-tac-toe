@@ -1,0 +1,52 @@
+<% title 'Play Game' %>
+<% content_for :before_scripts do %>
+<%= javascript_include_tag "http://js.pusher.com/2.1/pusher.min.js" %>
+<script>
+
+var PUSHER = new Pusher('<%= Pusher.key %>'/*,{
+  wsHost: '<%= Pusher.host %>',
+  wsPort: 8080,
+  disableFlash: true,
+  httpHost: '<%= Pusher.host %>',
+  httpPort: 8080
+}*/);
+
+</script>
+<% end %>
+
+
+<div class="row">
+  <div class="span6">
+    <%= render "game_board" %>
+  </div>
+
+  <div class="span6 board-stats">
+    <div id="wait_overlay">Waiting for another player to join!</div>
+
+    <div class="row">
+      <div class="span4">
+        <h2>Player: <span class="player-letter">X</span>
+          <small>(<a href="#" data-action="switch">switch</a>)</small>
+        </h2>
+
+        <button class="btn" data-action="save">Save</button>
+      </div>
+      <div class="span2">
+        <h4>Overall Score</h4>
+        <%= render "overall_scoreboard" %>
+      </div>
+    </div>
+
+
+
+
+  </div>
+</div>
+
+
+
+
+<script>
+initializeGameState('<%= @game.id %>', <%= @game.state.to_json.html_safe %>);
+
+</script>

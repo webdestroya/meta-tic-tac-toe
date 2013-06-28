@@ -1,0 +1,50 @@
+// Place all the styles related to the Games controller here.
+// They will automatically be included in application.css.
+// You can use Sass (SCSS) here: http://sass-lang.com/
+
+#gameboard {
+
+  position:relative;
+
+  td {
+    text-align:center;
+    font-weight:bold;
+    font-size: 24px;
+    height: 25px;
+    vertical-align: middle;
+    a {
+      text-decoration: none;
+      display:none;
+    }
+  }
+
+  td:hover {
+    a {
+      display: block;
+    }
+  }
+}
+
+#wait_overlay {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: #eee;
+  text-align: center;
+  padding-top: 10px;
+  border: 1px solid #000;
+}
+
+.board-stats {
+  position: relative;
+}
+
+.overall-board td {
+  text-align:center;
+  font-weight:bold;
+  font-size: 24px;
+  height: 25px;
+  vertical-align: middle;
+}

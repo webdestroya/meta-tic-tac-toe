@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title><%= content_for?(:title) ? yield(:title) : "Home" %> | Meta Tic-Tac-Toe</title>
+
+  <%= stylesheet_link_tag    "application", :media => "all" %>
+
+  <%= yield :before_scripts %>
+
+  <%= javascript_include_tag "application" %>
+  <%= csrf_meta_tags %>
+
+  <%= yield :extra_scripts %>
+
+</head>
+<body id="pagebody">
+<!--[if lt IE 7]>
+<p class="chromeframe">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> or <a href="http://www.google.com/chromeframe/?redirect=true">activate Google Chrome Frame</a> to improve your experience.</p>
+<![endif]-->
+
+<header>
+
+  <div class="navbar navbar-inverse navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="brand" href="/">Meta Tic-Tac-Toe</a>
+          <div class="nav-collapse collapse">
+            <ul class="nav">
+              <li class="active"><%= link_to 'New Game', new_game_path %></li>
+            </ul>
+
+            <ul class="nav pull-right">
+              <li><%= link_to 'Bugs', 'https://github.com/webdestroya/meta-tic-tac-toe/issues' %></li>
+            </ul>
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+    </div>
+
+</header>
+
+<div class="container-fluid" id="content">
+
+  <div class="container">
+
+  <% if content_for?(:page_heading) || content_for?(:title) %>
+  <div class="page-header"><h1>
+    <% if content_for?(:page_heading) %>
+      <%= yield :page_heading %>
+    <% elsif content_for?(:title) %>
+      <%= yield :title %>
+    <% end %>
+  </h1></div>
+  <% end %>
+    
+  <%= yield %>
+
+  </div>
+
+</div>
+
+<div class="clear"></div>
+
+<footer>
+  <div class="container">
+  <aside>&nbsp;</aside>
+  <div class="noprint row-fluid">
+    <div class="span12" style="text-align:center;">
+      UCI Scheduler by <a href="http://www.mitchdempsey.com/?utm_source=ucischeduler&utm_medium=website&utm_campaign=footer">Mitch Dempsey</a>
+    </div>
+  </div>
+</div>
+</footer>
+
+
+
+
+<% if ::Rails.env.eql?("production") %>
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-18627936-4', 'herokuapp.com');
+  ga('send', 'pageview');
+
+</script>
+<% end %>
+
+</body>
+</html>
