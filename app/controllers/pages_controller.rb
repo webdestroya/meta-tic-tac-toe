@@ -2,7 +2,7 @@ class PagesController < ApplicationController
   def index
   end
 
-  def about
+  def rules
   end
 
   def pusher_auth

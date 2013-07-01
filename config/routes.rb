@@ -2,7 +2,7 @@ MetaTicTacToe::Application.routes.draw do
   
   resources :games, only: [:new, :create, :update, :show]
 
-  get 'about', to: 'pages#about'
+  get 'rules', to: 'pages#rules'
 
   post 'pusher/auth', to: 'pages#pusher_auth'
 

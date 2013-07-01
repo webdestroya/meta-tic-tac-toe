@@ -37,6 +37,8 @@
               <% if controller.controller_name == "games" && controller.action_name == "show" %>
               <li class="active"><%= link_to 'Play!', @game %></li>
               <% end %>
+
+              <li><%= link_to 'Rules', rules_path %></li>
             </ul>
 
             <ul class="nav pull-right">
@@ -94,7 +96,7 @@
   m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
   })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
 
-  ga('create', 'UA-18627936-4', 'herokuapp.com');
+  ga('create', 'UA-18627936-5', 'mitchdempsey.com');
   ga('send', 'pageview');
 
 </script>

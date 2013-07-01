@@ -92,7 +92,8 @@ class GameState
 
   saveSuccess: (msg) ->
     $("button[data-action='save']").text "Saved!"
-    window.setTimeout _.bind(@resetSaveButton, this), 1000
+    if @overallWinner() == ' '
+      window.setTimeout _.bind(@resetSaveButton, this), 1000
     return
 
   resetSaveButton: ->
@@ -153,8 +154,7 @@ class GameState
       else
         $(".overall-board td[data-pos='#{pos}']").text @overall_score[pos]
 
-    
-
+    @handleOverallWinner()
     return
 
   handleOverallWinner: ->
@@ -165,8 +165,6 @@ class GameState
     $("button[data-action='save']").hide()
     
     PUSHER.disconnect()
-
-
     return
 
   overallWinner: ->
