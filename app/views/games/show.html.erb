@@ -3,13 +3,7 @@
 <%= javascript_include_tag "http://js.pusher.com/2.1/pusher.min.js" %>
 <script>
 
-var PUSHER = new Pusher('<%= Pusher.key %>'/*,{
-  wsHost: '<%= Pusher.host %>',
-  wsPort: 8080,
-  disableFlash: true,
-  httpHost: '<%= Pusher.host %>',
-  httpPort: 8080
-}*/);
+var PUSHER = new Pusher('<%= Pusher.key %>');
 
 </script>
 <% end %>
@@ -21,13 +15,17 @@ var PUSHER = new Pusher('<%= Pusher.key %>'/*,{
   </div>
 
   <div class="span6 board-stats">
-    <div id="wait_overlay">Waiting for another player to join!</div>
+    <div id="wait_overlay" class="alert"><span>Waiting for another player to join!</span></div>
 
     <div class="row">
       <div class="span4">
         <h2>Player: <span class="player-letter">X</span>
           <small>(<a href="#" data-action="switch">switch</a>)</small>
         </h2>
+
+        <div class="alert alert-success" id="turn_notice">
+          It's your turn! Make your move
+        </div>
 
         <button class="btn" data-action="save">Save</button>
       </div>

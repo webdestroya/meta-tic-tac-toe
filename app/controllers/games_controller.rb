@@ -15,6 +15,9 @@ class GamesController < ApplicationController
   # GET /games/new
   def new
     @game = Game.new
+    @game.save!
+
+    redirect_to @game
   end
 
   # GET /games/1/edit
@@ -40,12 +43,17 @@ class GamesController < ApplicationController
   # PATCH/PUT /games/1
   # PATCH/PUT /games/1.json
   def update
+
+    @game.turn = params[:game][:turn]
+    @game.finished = params[:game][:finished]
+    @game.winner = params[:game][:winner]
+    @game.overall_score = ActiveSupport::JSON.decode(params[:game][:overall_score])
+    @game.game_state = ActiveSupport::JSON.decode(params[:game][:game_state])
+
     respond_to do |format|
-      if @game.update(game_params)
-        format.html { redirect_to @game, notice: 'Game was successfully updated.' }
+      if @game.save
         format.json { head :no_content }
       else
-        format.html { render action: 'edit' }
         format.json { render json: @game.errors, status: :unprocessable_entity }
       end
     end
@@ -69,6 +77,6 @@ class GamesController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def game_params
-      params.require(:game).permit(:short_code, :game_state)
+      params.require(:game).permit(:short_code, :game_state, :overall_score, :turn)
     end
 end

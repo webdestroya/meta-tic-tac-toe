@@ -31,6 +31,12 @@ class GameState
       [null, null, null]
     ]
 
+    @overall_score = [
+      [' ', ' ', ' '],
+      [' ', ' ', ' '],
+      [' ', ' ', ' ']
+    ]
+
     @setupBinds()
 
     $("a[data-action='switch']").click _.bind(@switchSides, this)
@@ -54,7 +60,11 @@ class GameState
     return
 
   load: (state) ->
-    @turn = state.turn
+    # set the turn, but we need to reverse it.
+    @setTurn state.turn, false
+    @finished = state.finished
+    @winner = state.winner
+    @overall_score = state.overall_score
     
     for row, r in state.board
       for col, c in row
@@ -64,7 +74,30 @@ class GameState
     return
 
   saveGame: (event) ->
+    $("button[data-action='save']").text "Saving..."
+    $("button[data-action='save']").attr("disabled", "disabled")
+    $.ajax
+      type: "PUT",
+      url: "/games/#{@game_id}.json",
+      data: 
+        game:
+          winner: @overallWinner()
+          finished: @overallWinner() != ' '
+          turn: @turn
+          overall_score: JSON.stringify(@overall_score)
+          game_state: JSON.stringify( @serialize() )
+      dataType: 'json',
+      success: _.bind(@saveSuccess, this)
+    return
 
+  saveSuccess: (msg) ->
+    $("button[data-action='save']").text "Saved!"
+    window.setTimeout _.bind(@resetSaveButton, this), 1000
+    return
+
+  resetSaveButton: ->
+    $("button[data-action='save']").text "Save"
+    $("button[data-action='save']").removeAttr("disabled")
     return
 
   switchSides: (event) ->
@@ -100,25 +133,49 @@ class GameState
       grid: [row, col],
       letter: @letter
 
-    @turn = if @turn == "X" then "O" else "X"
+    @setTurn @letter
 
     @updateOverallScoreboard()
+
+    @saveGame()
 
     return
 
   updateOverallScoreboard: ->
     for cell, pos in _.flatten(@grid, true)
-      winner = cell.winner()
-      if winner == ' '
+
+      # only recalculate the score if we need to
+      if @overall_score[pos] == ' '
+        @overall_score[pos] = cell.winner()
+
+      if @overall_score[pos] == ' '
         $(".overall-board td[data-pos='#{pos}']").html '&nbsp;'
       else
-        $(".overall-board td[data-pos='#{pos}']").text winner
+        $(".overall-board td[data-pos='#{pos}']").text @overall_score[pos]
+
+    
+
     return
+
+  handleOverallWinner: ->
+    @winner = @overallWinner()
+
+    return unless @winner == "X" || @winner == "O"
+    
+    $("button[data-action='save']").hide()
+    
+    PUSHER.disconnect()
+
+
+    return
+
+  overallWinner: ->
+    return Grid.find_winner(@overall_score)
 
   # PRESENCE STUFF
 
   presenceSubscriptionSuccess: (members) ->
-    console.log "PRESENCE SUCCESS: ", members
+    # console.log "PRESENCE SUCCESS: ", members
     if members.count == 2
       @setLetter("O")
       $("#wait_overlay").hide()
@@ -129,7 +186,7 @@ class GameState
     return
 
   presenceMemberAdded: (member) ->
-    console.log "MEMBER ADDED: ", member
+    # console.log "MEMBER ADDED: ", member
     $("#wait_overlay").hide()
 
     new_letter = if @letter == "X" then "O" else "X"
@@ -137,7 +194,7 @@ class GameState
     return
 
   presenceMemberRemoved: (member) ->
-    console.log "MEMBER REMOVED: ", member
+    # console.log "MEMBER REMOVED: ", member
     $("#wait_overlay").show()
     return
 
@@ -158,7 +215,7 @@ class GameState
 
     @updateOverallScoreboard()
 
-    @turn = if data.letter == "X" then "O" else "X"
+    @setTurn data.letter
     return
 
 
@@ -170,14 +227,35 @@ class GameState
     $("#wait_overlay").hide()
     return
 
+  # Pass in the letter of the player who just took a turn
+  # if swap = false, then dont do the swapping calculation
+  setTurn: (current_turn_letter, swap=true) ->
+    if swap
+      @turn = if current_turn_letter == "X" then "O" else "X"
+    else 
+      @turn = current_turn_letter
+
+    if @turn == @letter
+      $("#turn_notice").addClass("alert-success").text("It's your turn! Make your move!")
+    else
+      $("#turn_notice").removeClass("alert-success").text("It's your opponent's turn!")
+
+    return
+
 
   setLetter: (@letter) ->
     $("#gameboard .place-marker").text @letter
     $("span.player-letter").text @letter
+    @setTurn @turn, false
     return
 
   serialize: ->
-    return
+    state = [ [null, null, null], [null, null, null], [null, null, null] ]
+    for row, r in state
+      for col, c in row
+        state[r][c] = @grid[r][c].serialize()
+
+    return state
 
 
 window.GameState = GameState

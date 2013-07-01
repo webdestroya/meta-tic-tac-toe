@@ -44,6 +44,9 @@ class Grid
   isFull: ->
     _.flatten(@squares).indexOf(' ') == -1
 
+  serialize: ->
+    return @squares
+
 
 Grid.find_winner = (str_or_array) ->
   if Object.prototype.toString.call(str_or_array) == '[object Array]'

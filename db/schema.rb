@@ -11,14 +11,17 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20130627232522) do
+ActiveRecord::Schema.define(version: 20130701172312) do
 
   create_table "games", force: true do |t|
-    t.string   "short_code",               null: false
+    t.string   "short_code",                    null: false
     t.text     "game_state"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.string   "turn",       default: "X", null: false
+    t.string   "turn",          default: "X",   null: false
+    t.text     "overall_score"
+    t.boolean  "finished",      default: false, null: false
+    t.string   "winner"
   end
 
   add_index "games", ["short_code"], name: "index_games_on_short_code", using: :btree

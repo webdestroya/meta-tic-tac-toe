@@ -32,10 +32,16 @@
           <a class="brand" href="/">Meta Tic-Tac-Toe</a>
           <div class="nav-collapse collapse">
             <ul class="nav">
-              <li class="active"><%= link_to 'New Game', new_game_path %></li>
+              <li><%= link_to 'New Game', new_game_path %></li>
+              
+              <% if controller.controller_name == "games" && controller.action_name == "show" %>
+              <li class="active"><%= link_to 'Play!', @game %></li>
+              <% end %>
             </ul>
 
             <ul class="nav pull-right">
+              <li><%= link_to 'About', 'https://github.com/webdestroya/meta-tic-tac-toe/blob/master/README.md' %></li>
+              <li><%= link_to 'Source', 'https://github.com/webdestroya/meta-tic-tac-toe' %></li>
               <li><%= link_to 'Bugs', 'https://github.com/webdestroya/meta-tic-tac-toe/issues' %></li>
             </ul>
           </div><!--/.nav-collapse -->
@@ -72,7 +78,7 @@
   <aside>&nbsp;</aside>
   <div class="noprint row-fluid">
     <div class="span12" style="text-align:center;">
-      UCI Scheduler by <a href="http://www.mitchdempsey.com/?utm_source=ucischeduler&utm_medium=website&utm_campaign=footer">Mitch Dempsey</a>
+      Meta-Tic-Tac-Toe app by <a href="http://www.mitchdempsey.com/?utm_source=meta-tic-tac-toe&utm_medium=website&utm_campaign=footer">Mitch Dempsey</a>
     </div>
   </div>
 </div>
