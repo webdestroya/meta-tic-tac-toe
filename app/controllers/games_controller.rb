@@ -1,15 +1,12 @@
 class GamesController < ApplicationController
-  before_action :set_game, only: [:show, :edit, :update, :destroy]
-
-  # GET /games
-  # GET /games.json
-  def index
-    @games = Game.all
-  end
+  before_action :set_game, only: [:show, :update, :expire]
 
   # GET /games/1
   # GET /games/1.json
   def show
+    @game_details = {
+      expire_path: expire_game_url(@game)
+    }
   end
 
   # GET /games/new
@@ -18,26 +15,6 @@ class GamesController < ApplicationController
     @game.save!
 
     redirect_to @game
-  end
-
-  # GET /games/1/edit
-  def edit
-  end
-
-  # POST /games
-  # POST /games.json
-  def create
-    @game = Game.new(game_params)
-
-    respond_to do |format|
-      if @game.save
-        format.html { redirect_to @game, notice: 'Game was successfully created.' }
-        format.json { render action: 'show', status: :created, location: @game }
-      else
-        format.html { render action: 'new' }
-        format.json { render json: @game.errors, status: :unprocessable_entity }
-      end
-    end
   end
 
   # PATCH/PUT /games/1
@@ -59,15 +36,10 @@ class GamesController < ApplicationController
     end
   end
 
-  # DELETE /games/1
-  # DELETE /games/1.json
-  def destroy
-    @game.destroy
-    respond_to do |format|
-      format.html { redirect_to games_url }
-      format.json { head :no_content }
-    end
+  def expire
+
   end
+
 
   private
     # Use callbacks to share common setup or constraints between actions.

@@ -45,6 +45,9 @@ var PUSHER = new Pusher('<%= Pusher.key %>');
 
 
 <script>
+
+window.GAME_DETAILS = <%= @game_details.to_json.html_safe %>;
+
 initializeGameState('<%= @game.id %>', <%= @game.state.to_json.html_safe %>);
 
 </script>

@@ -1,10 +1,11 @@
 <section id="gameboard">
 
+
   <% 3.times do |board_row| %>
   <div class="row">
     <% 3.times do |board_col| %>
-    <% grid_pos = 0 %>
-    <div class="span2">
+<% grid_pos = 0 %>    
+    <div class="span2" data-board-pos="<%= "#{board_row},#{board_col}" %>">
       <table class="table table-bordered table-condensed" 
         data-board-row="<%= board_row %>"
         data-board-col="<%= board_col %>"

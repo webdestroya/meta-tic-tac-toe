@@ -1,3 +1,7 @@
+
+MAX_IDLE_TIME = 900 # seconds to idle before we redirect them
+IDLE_INTERVAL = 10 # update the idle counter ever X seconds
+
 window.initializeGameState = (game_id, state) ->
   window.CHANNEL = PUSHER.subscribe "private-game-#{game_id}"
   window.PRESENCE = PUSHER.subscribe "presence-game-#{game_id}"
@@ -37,11 +41,25 @@ class GameState
       [' ', ' ', ' ']
     ]
 
+    @last_move = null
+
     @setupBinds()
 
     $("a[data-action='switch']").click _.bind(@switchSides, this)
     $("button[data-action='save']").click _.bind(@saveGame, this)
     $("a.place-marker").click _.bind(@placeMarker, this)
+
+    @idleTime = 0
+    window.setInterval _.bind(@runIdleTimer, this), IDLE_INTERVAL*1000
+
+  runIdleTimer: ->
+    @idleTime = @idleTime + IDLE_INTERVAL
+
+    if @idleTime >= MAX_IDLE_TIME
+      PUSHER.disconnect()
+      window.location.href = GAME_DETAILS.expire_path
+
+    return
 
 
   setupBinds: ->
@@ -90,6 +108,30 @@ class GameState
       success: _.bind(@saveSuccess, this)
     return
 
+  # check the validity of a move
+  # returns an array of boolean (is the move valid), and a string
+  # (the message)
+  isValidMove: (board_row, board_col, row, col) ->
+    
+    # Is it actually the player's turn?
+    return [false, "It's not your turn!"] if @turn != @letter
+
+    # if this is the first move, then anything goes
+    if @last_move != null
+      # [board row, boardcol, row, col, letter]
+      [last_board_row, last_board_col, last_row, last_col, last_letter] = @last_move
+
+      # This is the next cell
+      cell = @grid[last_row][last_col]
+
+      # the cell where the next move should be is not full, so it should be there
+      if !cell.isFull()
+        if last_row != board_row || last_col != board_col
+          return [false, "You must play on the highlighted grid."]
+
+
+    return [true, "Valid"]
+
   saveSuccess: (msg) ->
     $("button[data-action='save']").text "Saved!"
     if @overallWinner() == ' '
@@ -116,10 +158,6 @@ class GameState
   placeMarker: (event) ->
     event.preventDefault()
 
-    if @turn != @letter
-      alert "It's not your turn!"
-      return
-
     elm = $(event.target).parent()
 
     board_row = elm.data("board-row")
@@ -127,7 +165,15 @@ class GameState
     row = elm.data("row")
     col = elm.data("col")
 
+    # Validate the move
+    valid = @isValidMove(board_row, board_col, row, col)
+    unless valid[0]
+      alert valid[1]
+      return
+
     @grid[board_row][board_col].move(row, col, @letter)
+
+    @last_move = [board_row, board_col, row, col, @letter]
 
     CHANNEL.trigger 'client-player-move',
       board: [board_row, board_col],
@@ -135,11 +181,20 @@ class GameState
       letter: @letter
 
     @setTurn @letter
+    @setNextGrid row, col
 
     @updateOverallScoreboard()
 
     @saveGame()
 
+    @idleTime = 0
+
+    return
+
+  setNextGrid: (row, col) ->
+    $("#gameboard div.span2").removeClass("next-turn")
+    next_grid = $("#gameboard div[data-board-pos='#{row},#{col}']")
+    next_grid.addClass("next-turn")
     return
 
   updateOverallScoreboard: ->
@@ -184,7 +239,6 @@ class GameState
     return
 
   presenceMemberAdded: (member) ->
-    # console.log "MEMBER ADDED: ", member
     $("#wait_overlay").hide()
 
     new_letter = if @letter == "X" then "O" else "X"
@@ -192,7 +246,6 @@ class GameState
     return
 
   presenceMemberRemoved: (member) ->
-    # console.log "MEMBER REMOVED: ", member
     $("#wait_overlay").show()
     return
 
@@ -214,6 +267,11 @@ class GameState
     @updateOverallScoreboard()
 
     @setTurn data.letter
+    @setNextGrid grid[0], grid[1]
+
+    @idleTime = 0
+
+    @last_move = [board[0], board[1], grid[0], grid[1], data.letter]
     return
 
 

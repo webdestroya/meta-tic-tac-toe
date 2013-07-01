@@ -23,7 +23,14 @@
       display: block;
     }
   }
+
+  .next-turn {
+    table {
+      background-color: #fcf8e3;
+    }
+  }
 }
+
 
 #wait_overlay {
   position: absolute;
